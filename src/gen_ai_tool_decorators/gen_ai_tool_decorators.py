@@ -48,7 +48,7 @@ class LLMToolDecorator:
         return self.func(*args, **kwargs)
     
     @staticmethod
-    def python_type_to_json_schema_type(type_:str)->str:
+    def _python_type_to_json_schema_type(type_:str)->str:
         #Default unknown types to strings
         return JSON_SCHEMA_TYPE_MAPPINGS.get(type_, "string")
     
