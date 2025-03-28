@@ -34,6 +34,14 @@ chat_request.tools = [add_numbers.get_generic_tool_definition()]
 # etc...
 ```
 
+When using multiple tools, typical usage would be closer to:
+
+```python
+available_tools = [add_numbers, subtract_numbers, multiply_numbers]
+...
+chat_request.tools = [tool.get_cohere_tool_definition() for tool in available_tools]
+```
+
 ### Invoking the Tool with a `tool_call` from the Chat Response
 
 Helper methods are provided to simplify method calls using the `tool_call` results from an LLM invocation.
