@@ -48,7 +48,7 @@ class LLMToolDecorator:
         return self.func(*args, **kwargs)
     
     @staticmethod
-    def python_type_to_json_schema_type(type_:str)->str:
+    def _python_type_to_json_schema_type(type_:str)->str:
         #Default unknown types to strings
         return JSON_SCHEMA_TYPE_MAPPINGS.get(type_, "string")
     
@@ -167,7 +167,7 @@ class LLMToolDecorator:
         for parameter in self.parameter_definitions:
             parameters["properties"][parameter] = {}
             parameters["properties"][parameter]["description"] = self.parameter_definitions[parameter]["description"]
-            parameters["properties"][parameter]["type"] = self.python_type_to_json_schema_type(self.parameter_definitions[parameter]["type"])
+            parameters["properties"][parameter]["type"] = self._python_type_to_json_schema_type(self.parameter_definitions[parameter]["type"])
             if self.parameter_definitions[parameter]["required"]:
                 parameters["required"].append(parameter)
         return FunctionDefinition(
@@ -245,21 +245,3 @@ def llm_tool(description: str):
         method_decorator.description = description
         return method_decorator
     return decorator
-
-
-# @llm_tool("This method returns an appropriate greeting")
-# @parameter("name", str, "The person or object who is to be greeted. Defaults to 'world'", optional=True)
-# @parameter("informal", bool, "Determines whether we use formal or informal language")
-# @output_label("greeting")
-# def hello_world(informal: bool, name: str = "world", **kwargs) -> str:
-#     if informal:
-#         return "Hi " + name +kwargs.get("suffix", "")
-#     return "Hello " + name +kwargs.get("suffix", "")
-
-# test_tool_call = CohereToolCall(name="hello_world", parameters={"informal":True, "name":"Test"})
-
-# test_generic_call = FunctionCall(name="hello_world", id ="chatcmpl-tool-abcd", type="FUNCTION", arguments=f"{{\"informal\": true, \"name\": \"Test\"}}")
-
-# print(hello_world.get_generic_tool_definition())
-# print(hello_world.call_with_cohere_tool_call(test_tool_call, suffix="Suffix"))
-# print(hello_world.call_with_generic_tool_call(test_generic_call, suffix="Suffix"))

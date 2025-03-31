@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+#Build outputs
+dist/
+oci_gen_ai_tool_decorators.egg-info/
+
 # Environments
 .env
 .venv

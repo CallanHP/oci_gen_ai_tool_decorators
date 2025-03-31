@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "oci_gen_ai_tool_decorators"
+description = "A super simple utility for simplifying generating tool interactions for the OCI Generative AI service."
+version = "0.0.1"
+dependencies = [
+    "oci >= 2.144.1",
+]
+readme = "README.md"
+license = "MIT"
+authors = [{name ="Callan HP", email = "callan.howell-pavia@oracle.com"}]
