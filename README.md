@@ -1,6 +1,6 @@
 # Tool Decorators for OCI Generative AI
 
-A super simple utility for simplifying generating tool definitions for the OCI Generative AI service.
+A super simple utility for simplifying generating tool interactions for the OCI Generative AI service.
 
 ## Basic Usage
 
