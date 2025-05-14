@@ -2,6 +2,8 @@ import unittest
 from gen_ai_tool_decorators import llm_tool, parameter, output_label
 from oci.generative_ai_inference.models import CohereToolCall, CohereToolResult, CohereTool, FunctionDefinition, FunctionCall, ToolMessage
 
+
+
 def mock_function(param="mock"):
   return param
 
@@ -40,6 +42,7 @@ class TestParameter(unittest.TestCase):
             "type": "str",
             "description": "description",
             "required": True,
+            "item_type": None
         }, 'Decorated function did not have parameter assigned.')
 
     def test_parameter_included_in_cohere_definition(self):
@@ -53,6 +56,27 @@ class TestParameter(unittest.TestCase):
         tool_definiton = decorated_func.get_generic_tool_definition()
         self.assertEqual(tool_definiton.parameters["properties"]["name"]["description"], "description", 'Tool definition did not have parameter description set')
         self.assertEqual(tool_definiton.parameters["properties"]["name"]["type"], "string", 'Tool definition did not have parameter type set')
+        
+        # Test with list type and item_type
+        decorated_func = (parameter("names", list, "description", item_type=str))(mock_function)
+        tool_definition = decorated_func.get_generic_tool_definition()
+        self.assertEqual(tool_definition.parameters["properties"]["names"]["description"], "description", 'Tool definition did not have parameter description set')
+        self.assertEqual(tool_definition.parameters["properties"]["names"]["type"], "array", 'Tool definition did not have parameter type set')
+        self.assertEqual(tool_definition.parameters["properties"]["names"]["items"]["type"], "string", 'Tool definition did not have item type set')
+
+        # Test with list type and no item_type
+        decorated_func = (parameter("names", list, "description"))(mock_function)
+        tool_definition = decorated_func.get_generic_tool_definition()
+        self.assertEqual(tool_definition.parameters["properties"]["names"]["description"], "description", 'Tool definition did not have parameter description set')
+        self.assertEqual(tool_definition.parameters["properties"]["names"]["type"], "array", 'Tool definition did not have parameter type set')
+        self.assertNotIn("items", tool_definition.parameters["properties"]["names"], 'Tool definition had item type set when it should not')
+
+        # Test with non-list type and item_type
+        decorated_func = (parameter("name", str, "description", item_type=int))(mock_function)
+        tool_definition = decorated_func.get_generic_tool_definition()
+        self.assertEqual(tool_definition.parameters["properties"]["name"]["description"], "description", 'Tool definition did not have parameter description set')
+        self.assertEqual(tool_definition.parameters["properties"]["name"]["type"], "string", 'Tool definition did not have parameter type set')
+        self.assertNotIn("items", tool_definition.parameters["properties"]["name"], 'Tool definition had item type set when it should not')
         
     def test_multiple_parameters_supported_in_cohere(self):
         decorated_func = (parameter("p1", str, "description"))(mock_function)

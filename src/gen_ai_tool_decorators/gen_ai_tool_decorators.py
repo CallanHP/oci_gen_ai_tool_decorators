@@ -100,7 +100,7 @@ class LLMToolDecorator:
         result_text[self.output_label]=tool_result
         return ToolMessage(content=[TextContent(text=json.dumps(result_text))], tool_call_id=tool_call.id)
 
-    def add_parameter(self, name: str, obj_type: str, description: str="", optional: bool = False):
+    def add_parameter(self, name: str, obj_type: type, description: str="", optional: bool = False, item_type: type = None):
         """Adds details of a parameter for the method.
 
             Adds details about a parameter for the tool call, to allow the LLM to
@@ -121,6 +121,7 @@ class LLMToolDecorator:
             "type": obj_type.__name__,
             "description": description,
             "required": not optional,
+            "item_type": item_type.__name__ if item_type != None else None
         }
 
     def get_cohere_tool_definition(self)->CohereTool:
@@ -168,6 +169,9 @@ class LLMToolDecorator:
             parameters["properties"][parameter] = {}
             parameters["properties"][parameter]["description"] = self.parameter_definitions[parameter]["description"]
             parameters["properties"][parameter]["type"] = self._python_type_to_json_schema_type(self.parameter_definitions[parameter]["type"])
+            if self.parameter_definitions[parameter]["type"] == "list" and self.parameter_definitions[parameter]["item_type"] != None:
+                parameters["properties"][parameter]["items"] = {}
+                parameters["properties"][parameter]["items"]["type"] = self._python_type_to_json_schema_type(self.parameter_definitions[parameter]["item_type"])
             if self.parameter_definitions[parameter]["required"]:
                 parameters["required"].append(parameter)
         return FunctionDefinition(
@@ -177,7 +181,7 @@ class LLMToolDecorator:
         )
 
 
-def parameter(name: str, type_: type, description: str, optional: bool = False):
+def parameter(name: str, type_: type, description: str, optional: bool = False, item_type: type = None):
     """Decorator for a tool function parameter.
 
     This decorator adds a parameter definition to a tool for use with the OCI 
@@ -190,13 +194,15 @@ def parameter(name: str, type_: type, description: str, optional: bool = False):
             default, format, etc.
         optional (bool): Specifies if this parameter is required or not
             default: False
+        item_type (type): If the type of the parameter is a list, the type of the items in the list
+            default: None
     """
     def decorator(func: Callable[..., T]) -> LLMToolDecorator:
         if isinstance(func, LLMToolDecorator):
-            func.add_parameter(name, type_, description, optional)
+            func.add_parameter(name, type_, description, optional, item_type)
             return func
         method_decorator = LLMToolDecorator(func)
-        method_decorator.add_parameter(name, type_, description, optional)
+        method_decorator.add_parameter(name, type_, description, optional, item_type)
         return method_decorator
     return decorator
 
