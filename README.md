@@ -2,6 +2,12 @@
 
 A super simple utility for simplifying generating tool interactions for the OCI Generative AI service.
 
+## Installation
+To install the decorators using pip:
+```
+pip install git+https://github.com/CallanHP/oci_gen_ai_tool_decorators
+```
+
 ## Basic Usage
 
 ### Defining a Tool
