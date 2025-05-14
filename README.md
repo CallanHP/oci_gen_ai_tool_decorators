@@ -108,6 +108,7 @@ Adds a parameter definition to a tool for use with the OCI Gen AI Service.
     *   `type_` (type) - The Python type of this parameter.
     *   `description` (str) - A string describing the parameter, including default, format, etc.
     *   `optional` (bool) - Specifies if this parameter is required or not (default: False).
+    *   `item_type` (type) - If the the parameter takes a list, specifies type of the items in the list (default: None).
 *   **Returns:** An instance of `LLMToolDecorator`.
 
 Example:
@@ -151,7 +152,7 @@ This Callable class wraps a function which should be an available tool for use w
     *   `output_label` (str): A string setting the name of the attribute containing the method output used in the tool call result.
 *   **Methods:**
     *   `__call__(*args, **kwargs)`: Calls the underlying method with the provided arguments.
-    *   `add_parameter(name: str, obj_type: str, description: str, optional: bool = False)`: Adds details of a parameter for the method.
+    *   `add_parameter(name: str, obj_type: str, description: str, optional: bool = False, item_type: type = None)`: Adds details of a parameter for the method.
     *   `get_cohere_tool_definition()`: Gets a Cohere tool definition for interacting with Gen AI.
     *   `get_generic_tool_definition()`: Gets a generic tool definition for interacting with Gen AI.
     *   `call_with_cohere_tool_call(tool_call: CohereToolCall, **kwargs)`: Calls the underlying method using the parameters supplied in the tool call response from the Gen AI Service.
